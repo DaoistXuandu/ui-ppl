@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Mail, Lock, ArrowRight, ChevronLeft, LogIn, ShieldCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({ email: '', password: '' });
+    const router = useRouter();
 
     const isFormValid = formData.email && formData.password.length >= 8;
 
@@ -71,13 +73,13 @@ export default function LoginPage() {
 
                         {/* Tombol Submit - Size dikecilkan (py-3.5, text-base) agar lebih proporsional */}
                         <div className="pt-4 flex flex-col items-center gap-6">
-                            <button
-                                type="submit"
-                                disabled={!isFormValid}
+                            <div
+                                onClick={e => router.push("/dashboard")}
+                                // disabled={!isFormValid}
                                 className="w-full py-3.5 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all shadow-lg bg-gradient-to-r from-[#1E88E5] to-[#1565C0] text-white hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Masuk Sekarang <LogIn className="w-4 h-4" />
-                            </button>
+                            </div>
 
                             <div className="flex flex-col items-center gap-2">
                                 <p className="text-slate-500 font-medium text-xs">Belum memiliki akun?</p>
