@@ -8,7 +8,7 @@ import {
     Activity, Award, Building2, ShieldCheck,
     AlertCircle, Plus, FileSignature, BarChart3, Megaphone, X, Edit3, Trash2,
     FileCheck,
-    User
+    User, CalendarDays
 } from 'lucide-react';
 
 // Import Komponen Modular
@@ -20,6 +20,7 @@ import StatistikPanel from '../components/statistik';
 import GbApprovalsPanel from '../components/gb-approvals';
 import DaftarGbPanel from '../components/daftar-gb';
 import ProfilPanel from '../components/profil';
+import PeriodeKegiatanPanel from '../components/periode-kegiatan'; // Tambahkan Import ini
 
 export default function UnifiedDashboard() {
     const [role, setRole] = useState<'admin' | 'kaprodi' | 'gb'>('kaprodi');
@@ -88,14 +89,14 @@ export default function UnifiedDashboard() {
 
     // State Mock Data (Existing)
     const [pengajuanList, setPengajuanList] = useState([
-        { id: 1, prodi: 'Teknik Informatika - Univ. Telkom', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '22 Feb 2026', status: 'Sedang diproses' },
-        { id: 2, prodi: 'Sistem Informasi - Univ. Indonesia', gbName: 'Prof. Dr. Siti Nurhaliza', gbUniv: 'Universitas Brawijaya', tgl: '20 Feb 2026', status: 'Diterima' },
-        { id: 3, prodi: 'Teknik Komputer - ITS', gbName: 'Prof. Dr. Budi Santoso', gbUniv: 'Universitas Gadjah Mada', tgl: '18 Feb 2026', status: 'Sedang diproses' },
-        { id: 4, prodi: 'Informatika - Univ. Diponegoro', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '15 Feb 2026', status: 'Ditolak' },
-        { id: 5, prodi: 'Sains Data - Univ. Airlangga', gbName: 'Prof. Dr. Gede Putra', gbUniv: 'Universitas Udayana', tgl: '23 Feb 2026', status: 'Sedang diproses' },
-        { id: 6, prodi: 'Teknologi Informasi - Univ. Bina Nusantara', gbName: 'Prof. Dr. Siti Nurhaliza', gbUniv: 'Universitas Brawijaya', tgl: '10 Feb 2026', status: 'Selesai' },
-        { id: 7, prodi: 'Sistem Informasi - Univ. Gunadarma', gbName: 'Prof. Dr. Budi Santoso', gbUniv: 'Universitas Gadjah Mada', tgl: '21 Feb 2026', status: 'Diterima' },
-        { id: 8, prodi: 'Informatika - Univ. Hasanuddin', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '05 Feb 2026', status: 'Sedang diproses' }
+        { id: 1, prodi: 'Teknik Informatika - Univ. Telkom', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '22 Feb 2026', status: 'Sedang diproses', pesan: 'Terkait permohonan pendampingan akreditasi.' },
+        { id: 2, prodi: 'Sistem Informasi - Univ. Indonesia', gbName: 'Prof. Dr. Siti Nurhaliza', gbUniv: 'Universitas Brawijaya', tgl: '20 Feb 2026', status: 'Diterima', pesan: "Terkait permohonan pendampingan akreditasi." },
+        { id: 3, prodi: 'Teknik Komputer - ITS', gbName: 'Prof. Dr. Budi Santoso', gbUniv: 'Universitas Gadjah Mada', tgl: '18 Feb 2026', status: 'Sedang diproses', pesan: "" },
+        { id: 4, prodi: 'Informatika - Univ. Diponegoro', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '15 Feb 2026', status: 'Ditolak', pesan: "" },
+        { id: 5, prodi: 'Sains Data - Univ. Airlangga', gbName: 'Prof. Dr. Gede Putra', gbUniv: 'Universitas Udayana', tgl: '23 Feb 2026', status: 'Sedang diproses', pesan: "" },
+        { id: 6, prodi: 'Teknologi Informasi - Univ. Bina Nusantara', gbName: 'Prof. Dr. Siti Nurhaliza', gbUniv: 'Universitas Brawijaya', tgl: '10 Feb 2026', status: 'Selesai', pesan: "" },
+        { id: 7, prodi: 'Sistem Informasi - Univ. Gunadarma', gbName: 'Prof. Dr. Budi Santoso', gbUniv: 'Universitas Gadjah Mada', tgl: '21 Feb 2026', status: 'Diterima', pesan: "" },
+        { id: 8, prodi: 'Informatika - Univ. Hasanuddin', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '05 Feb 2026', status: 'Sedang diproses', pesan: "" }
     ]);
     const [verifikasiData, setVerifikasiData] = useState([
         {
@@ -182,6 +183,7 @@ export default function UnifiedDashboard() {
     const menuMap = {
         admin: [
             { name: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+            { name: 'Periode Kegiatan', icon: <CalendarDays className="w-5 h-5" /> }, // MENU BARU ADMIN
             { name: 'Verifikasi Pendaftar', icon: <ShieldCheck className="w-5 h-5" /> },
             { name: 'Daftar Pengajuan', icon: <FileText className="w-5 h-5" /> },
             { name: 'Daftar Kegiatan', icon: <Activity className="w-5 h-5" /> },
@@ -365,6 +367,7 @@ export default function UnifiedDashboard() {
                         {activeMenu === 'Persetujuan Dokumen' && <GbApprovalsPanel showToast={showToast} />}
                         {activeMenu === 'Daftar Guru Besar' && <DaftarGbPanel showToast={showToast} setActiveMenu={setActiveMenu} />}
                         {activeMenu === 'Profil' && <ProfilPanel role={role} showToast={showToast} />}
+                        {activeMenu === 'Periode Kegiatan' && <PeriodeKegiatanPanel showToast={showToast} />}
                     </div>
                 </div>
             </main>

@@ -40,19 +40,26 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
 
     // --- DATA DUMMY KEGIATAN ---
     const [kegiatanData, setKegiatanData] = useState(initialKegiatanList && initialKegiatanList.length > 0 ? initialKegiatanList : [
-        { id: 101, nama: 'Pembinaan Kurikulum OBE Batch I', waktu: 'Senin, 12 Maret 2026', tempat: 'Daring (Zoom)', partisipan: 'Informatika - Telkom', pembina: 'Prof. Ahmad', status: 'Sedang Berjalan' },
-        { id: 102, nama: 'Workshop Penjaminan Mutu Internal', waktu: 'Kamis, 25 Februari 2026', tempat: 'Jakarta', partisipan: 'Sistem Informasi - UI', pembina: 'Prof. Siti', status: 'Selesai' },
-        { id: 103, nama: 'Review Borang Akreditasi Mandiri', waktu: 'Rabu, 15 April 2026', tempat: 'Hybrid', partisipan: 'Teknik Komputer - ITS', pembina: 'Prof. Budi', status: 'Administrasi' },
-        { id: 104, nama: 'Sinkronisasi CPL Standar APTIKOM', waktu: 'Jumat, 22 Mei 2026', tempat: 'Bandung', partisipan: 'Sains Data - Unair', pembina: 'Prof. Gede', status: 'Administrasi' },
+        { id: 101, nama: 'Pembinaan Kurikulum OBE Batch I', waktu: 'GBIM Batch I - 2026', tempat: 'Daring (Zoom)', partisipan: 'Informatika - Telkom', pembina: 'Prof. Ahmad', status: 'Sedang Berjalan' },
+        { id: 102, nama: 'Workshop Penjaminan Mutu Internal', waktu: 'GBIM Khusus APTIKOM - 2026', tempat: 'Jakarta', partisipan: 'Sistem Informasi - UI', pembina: 'Prof. Siti', status: 'Selesai' },
+        { id: 103, nama: 'Review Borang Akreditasi Mandiri', waktu: 'GBIM Batch II - 2026', tempat: 'Hybrid', partisipan: 'Teknik Komputer - ITS', pembina: 'Prof. Budi', status: 'Administrasi' },
+        { id: 104, nama: 'Sinkronisasi CPL Standar APTIKOM', waktu: 'GBIM Batch II - 2026', tempat: 'Bandung', partisipan: 'Sains Data - Unair', pembina: 'Prof. Gede', status: 'Administrasi' },
     ]);
 
     // --- STATE FORM BUAT KEGIATAN ---
-    const [newKegiatan, setNewKegiatan] = useState({ nama: '', waktu: '', tempat: '' });
+    const [newKegiatan, setNewKegiatan] = useState({ nama: '', periode: '', tempat: '' });
     const [selectedProdis, setSelectedProdis] = useState<string[]>([]);
     const [selectedPembinas, setSelectedPembinas] = useState<string[]>([]);
     const [inputSearchProdi, setInputSearchProdi] = useState('');
     const [inputSearchGB, setInputSearchGB] = useState('');
     const [searchPengajuanModal, setSearchPengajuanModal] = useState('');
+
+    // Dummy Data Periode untuk Dropdown
+    const daftarPeriode = [
+        "GBIM Batch I - 2026",
+        "GBIM Batch II - 2026",
+        "GBIM Khusus APTIKOM - 2026"
+    ];
 
     const dummyPengajuanDiterima = [
         { id: 1, prodi: 'Informatika - Univ. Telkom', gbName: 'Prof. Dr. Ahmad Setiawan' },
@@ -66,7 +73,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
         p.gbName.toLowerCase().includes(searchPengajuanModal.toLowerCase())
     );
 
-    const isFormValid = newKegiatan.nama && newKegiatan.waktu && newKegiatan.tempat && selectedProdis.length > 0 && selectedPembinas.length > 0;
+    const isFormValid = newKegiatan.nama && newKegiatan.periode && newKegiatan.tempat && selectedProdis.length > 0 && selectedPembinas.length > 0;
 
     const addProdi = (val: string) => {
         if (val.trim() && !selectedProdis.includes(val.trim())) {
@@ -91,36 +98,11 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
         showToast(`Ditambahkan: ${p.prodi} & ${p.gbName}`, 'success');
     };
 
-    const handleCreate = (e: React.FormEvent) => {
-        e.preventDefault();
-        const created = {
-            id: kegiatanData.length + 101,
-            nama: newKegiatan.nama,
-            waktu: newKegiatan.waktu,
-            tempat: newKegiatan.tempat,
-            partisipan: selectedProdis.join(', '),
-            pembina: selectedPembinas.join(', '),
-            status: 'Administrasi'
-        };
-        setKegiatanData([created, ...kegiatanData]);
-        showToast('Kegiatan baru berhasil dibuat!', 'success');
-        setShowModal(false);
-        setNewKegiatan({ nama: '', waktu: '', tempat: '' });
-        setSelectedProdis([]);
-        setSelectedPembinas([]);
-    };
-
-    const filtered = kegiatanData.filter((k: any) => {
-        const matchName = k.nama.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchStatus = filterStatus === 'Semua' || k.status === filterStatus;
-        return matchName && matchStatus;
-    });
-
-    // --- STATE MODE EDIT (Tambahkan di bawah state showModal) ---
+    // --- STATE MODE EDIT ---
     const [isEditMode, setIsEditMode] = useState(false);
     const [editId, setEditId] = useState<number | null>(null);
 
-    // --- FUNGSI SUBMIT FORM (Gantikan handleCreate lama dengan ini) ---
+    // --- FUNGSI SUBMIT FORM ---
     const handleSubmitForm = (e: React.FormEvent) => {
         e.preventDefault();
         if (isEditMode && editId) {
@@ -128,7 +110,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
             setKegiatanData((prev: any) => prev.map((k: any) => k.id === editId ? {
                 ...k,
                 nama: newKegiatan.nama,
-                waktu: newKegiatan.waktu,
+                waktu: newKegiatan.periode, // Map kembali ke 'waktu' agar kompatibel dengan tabel lama
                 tempat: newKegiatan.tempat,
                 partisipan: selectedProdis.join(', '),
                 pembina: selectedPembinas.join(', ')
@@ -139,7 +121,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
             const created = {
                 id: kegiatanData.length + 101,
                 nama: newKegiatan.nama,
-                waktu: newKegiatan.waktu,
+                waktu: newKegiatan.periode, // Map ke field waktu untuk render tabel
                 tempat: newKegiatan.tempat,
                 partisipan: selectedProdis.join(', '),
                 pembina: selectedPembinas.join(', '),
@@ -153,7 +135,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
         setShowModal(false);
         setIsEditMode(false);
         setEditId(null);
-        setNewKegiatan({ nama: '', waktu: '', tempat: '' });
+        setNewKegiatan({ nama: '', periode: '', tempat: '' });
         setSelectedProdis([]);
         setSelectedPembinas([]);
     };
@@ -165,7 +147,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
         // Pre-load data ke form
         setNewKegiatan({
             nama: detailKegiatan.nama,
-            waktu: detailKegiatan.waktu,
+            periode: detailKegiatan.waktu, // Load data 'waktu' ke input 'periode'
             tempat: detailKegiatan.tempat
         });
         setSelectedProdis(detailKegiatan.partisipan.split(',').map((p: string) => p.trim()));
@@ -174,6 +156,12 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
         setDetailKegiatan(null); // Tutup modal detail
         setShowModal(true);      // Buka modal form
     };
+
+    const filtered = kegiatanData.filter((k: any) => {
+        const matchName = k.nama.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchStatus = filterStatus === 'Semua' || k.status === filterStatus;
+        return matchName && matchStatus;
+    });
 
     if (pageError) {
         return (
@@ -204,7 +192,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
                         <button onClick={() => {
                             setIsEditMode(false);
                             setEditId(null);
-                            setNewKegiatan({ nama: '', waktu: '', tempat: '' });
+                            setNewKegiatan({ nama: '', periode: '', tempat: '' });
                             setSelectedProdis([]);
                             setSelectedPembinas([]);
                             setShowModal(true);
@@ -238,7 +226,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
                     <thead className="bg-slate-50/50 border-b border-slate-100">
                         <tr className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                             <th className="p-5 pl-8">Nama Kegiatan</th>
-                            <th className="p-5">Waktu & Lokasi</th>
+                            <th className="p-5">Periode & Lokasi</th>
                             <th className="p-5">Status</th>
                             <th className="p-5 text-center pr-8">Aksi</th>
                         </tr>
@@ -251,7 +239,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
                                     <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">ID: #{k.id}</p>
                                 </td>
                                 <td className="p-5">
-                                    <p className="text-sm font-bold text-slate-700">{k.waktu || 'Waktu belum diatur'}</p>
+                                    <p className="text-sm font-bold text-slate-700">{k.waktu || 'Belum diatur'}</p>
                                     <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" /> {k.tempat}</p>
                                 </td>
                                 <td className="p-5">
@@ -264,11 +252,9 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
                                 </td>
                                 <td className="p-5 pr-8 text-center">
                                     <div className="flex justify-center gap-2">
-                                        {/* Tombol Detail/Mata (Bisa diakses oleh semua role) */}
                                         <button onClick={() => handleOpenDetail(k)} className="p-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-blue-600 hover:text-white transition-all" title="Detail Kegiatan">
                                             <Eye className="w-4 h-4" />
                                         </button>
-
                                     </div>
                                 </td>
                             </tr>
@@ -278,10 +264,10 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
             </div>
 
             {/* MODAL DETAIL KEGIATAN & UPLOAD */}
-            {/* MODAL DETAIL KEGIATAN & UPLOAD */}
             {detailKegiatan && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in">
                     <div className="bg-white rounded-[32px] w-full max-w-[800px] max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95">
+
                         {/* Header Modal - Tombol Edit Admin Pindah ke Sini */}
                         <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
                             <h3 className="text-xl font-extrabold text-slate-800">Detail Kegiatan</h3>
@@ -299,7 +285,7 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
                             {/* Info General */}
                             <div className="space-y-1">
                                 <h2 className="text-2xl font-black text-slate-800">{detailKegiatan.nama}</h2>
-                                <p className="text-sm font-medium text-slate-500">Waktu: {detailKegiatan.waktu} | Lokasi: {detailKegiatan.tempat}</p>
+                                <p className="text-sm font-medium text-slate-500">Periode: {detailKegiatan.waktu} | Lokasi: {detailKegiatan.tempat}</p>
                                 <span className="inline-block mt-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-md text-xs font-bold uppercase">{detailKegiatan.status}</span>
                             </div>
 
@@ -425,10 +411,11 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
                 </div>
             )}
 
-            {/* MODAL BUAT KEGIATAN (HANYA ADMIN) */}
+            {/* MODAL BUAT / EDIT KEGIATAN (HANYA ADMIN) */}
             {showModal && role === 'admin' && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
                     <div className="bg-white rounded-[40px] w-full max-w-[950px] shadow-2xl flex overflow-hidden animate-in zoom-in-95 h-[85vh]">
+
                         {/* Sidebar Modal: Quick Add */}
                         <div className="w-[350px] bg-slate-50 border-r border-slate-100 p-8 flex flex-col">
                             <h3 className="text-lg font-extrabold text-slate-800 mb-4">Pengajuan Diterima</h3>
@@ -453,70 +440,81 @@ export default function KegiatanPanel({ role, kegiatanList: initialKegiatanList,
 
                         {/* Main Form Modal */}
                         <div className="flex-1 p-10 overflow-y-auto relative">
-                            {/* Main Form Modal */}
-                            <div className="flex-1 p-10 overflow-y-auto relative">
-                                <button type="button" onClick={() => setShowModal(false)} className="absolute top-8 right-8 p-2 text-slate-400 hover:text-red-500"><X className="w-6 h-6" /></button>
+                            <button type="button" onClick={() => setShowModal(false)} className="absolute top-8 right-8 p-2 text-slate-400 hover:text-red-500"><X className="w-6 h-6" /></button>
 
-                                {/* Judul Form Dinamis */}
-                                <h3 className="text-2xl font-extrabold text-slate-800 mb-10">
-                                    {isEditMode ? 'Edit Entitas Kegiatan' : 'Form Entitas Kegiatan'}
-                                </h3>
+                            {/* Judul Form Dinamis */}
+                            <h3 className="text-2xl font-extrabold text-slate-800 mb-10">
+                                {isEditMode ? 'Edit Entitas Kegiatan' : 'Form Entitas Kegiatan'}
+                            </h3>
 
-                                <form onSubmit={handleSubmitForm} className="space-y-6 max-w-[500px] mx-auto">                                <div className="space-y-2">
+                            <form onSubmit={handleSubmitForm} className="space-y-6 max-w-[500px] mx-auto">
+                                <div className="space-y-2">
                                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nama Kegiatan</label>
                                     <input required type="text" value={newKegiatan.nama} onChange={(e) => setNewKegiatan({ ...newKegiatan, nama: e.target.value })} placeholder="Input Nama Kegiatan..." className="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500 text-sm font-bold transition-all" />
                                 </div>
 
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Waktu Pelaksanaan</label>
-                                        <div className="relative">
-                                            <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                                            <input required type="text" value={newKegiatan.waktu} onChange={(e) => setNewKegiatan({ ...newKegiatan, waktu: e.target.value })} placeholder="Contoh: Senin, 12 Maret 2026" className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500 text-sm font-bold transition-all" />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tempat</label>
-                                        <div className="relative">
-                                            <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                                            <input required type="text" value={newKegiatan.tempat} onChange={(e) => setNewKegiatan({ ...newKegiatan, tempat: e.target.value })} placeholder="Contoh: Hybrid / Zoom" className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500 text-sm font-bold transition-all" />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-3 pt-4 border-t border-slate-50">
-                                        <label className="text-[10px] font-bold text-[#1E88E5] uppercase tracking-widest ml-1">Cari & Tambah Partisipan (Prodi)</label>
-                                        <div className="relative">
-                                            <Building2 className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                                            <input type="text" placeholder="Ketik prodi lalu tekan enter..." value={inputSearchProdi} onChange={(e) => setInputSearchProdi(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addProdi(inputSearchProdi))} className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500 text-sm font-bold" />
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {selectedProdis.map(item => (
-                                                <button key={item} type="button" onClick={() => removeProdi(item)} className="flex items-center gap-2 bg-blue-50 text-[#1E88E5] border border-blue-100 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-red-50 hover:text-red-600 transition-all"><Minus className="w-3 h-3" /> {item}</button>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Periode Kegiatan</label>
+                                    <div className="relative">
+                                        <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none" />
+                                        <select
+                                            required
+                                            value={newKegiatan.periode}
+                                            onChange={(e) => setNewKegiatan({ ...newKegiatan, periode: e.target.value })}
+                                            className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500 text-sm font-bold transition-all appearance-none cursor-pointer"
+                                        >
+                                            <option value="" disabled>-- Pilih Periode Pelaksanaan --</option>
+                                            {daftarPeriode.map((p, i) => (
+                                                <option key={i} value={p}>{p}</option>
                                             ))}
-                                        </div>
+                                            {/* Opsi tambahan untuk menampung data lama saat Edit yang mungkin tidak ada di daftarPeriode */}
+                                            {isEditMode && newKegiatan.periode && !daftarPeriode.includes(newKegiatan.periode) && (
+                                                <option value={newKegiatan.periode}>{newKegiatan.periode}</option>
+                                            )}
+                                        </select>
                                     </div>
+                                </div>
 
-                                    <div className="space-y-3 pt-4 border-t border-slate-50">
-                                        <label className="text-[10px] font-bold text-orange-600 uppercase tracking-widest ml-1">Cari & Tambah Pembina (GB)</label>
-                                        <div className="relative">
-                                            <GraduationCap className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                                            <input type="text" placeholder="Ketik nama GB lalu tekan enter..." value={inputSearchGB} onChange={(e) => setInputSearchGB(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addPembina(inputSearchGB))} className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-orange-500 text-sm font-bold" />
-                                        </div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {selectedPembinas.map(item => (
-                                                <button key={item} type="button" onClick={() => removePembina(item)} className="flex items-center gap-2 bg-orange-50 text-orange-600 border border-orange-100 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-red-50 hover:text-red-600 transition-all"><Minus className="w-3 h-3" /> {item}</button>
-                                            ))}
-                                        </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Tempat</label>
+                                    <div className="relative">
+                                        <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                        <input required type="text" value={newKegiatan.tempat} onChange={(e) => setNewKegiatan({ ...newKegiatan, tempat: e.target.value })} placeholder="Contoh: Hybrid / Zoom" className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500 text-sm font-bold transition-all" />
                                     </div>
+                                </div>
 
-                                    <div className="pt-6">
-                                        <button type="submit" disabled={!isFormValid} className={`w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all shadow-lg ${isFormValid ? 'bg-gradient-to-r from-[#1E88E5] to-[#1565C0] text-white hover:shadow-blue-200' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}>
-                                            {/* Teks Tombol Submit Dinamis */}
-                                            {isEditMode ? 'Simpan Perubahan' : 'Buat Kegiatan'} <CheckCircle className="w-5 h-5" />
-                                        </button>
+                                <div className="space-y-3 pt-4 border-t border-slate-50">
+                                    <label className="text-[10px] font-bold text-[#1E88E5] uppercase tracking-widest ml-1">Cari & Tambah Partisipan (Prodi)</label>
+                                    <div className="relative">
+                                        <Building2 className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                        <input type="text" placeholder="Ketik prodi lalu tekan enter..." value={inputSearchProdi} onChange={(e) => setInputSearchProdi(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addProdi(inputSearchProdi))} className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-blue-500 text-sm font-bold" />
                                     </div>
-                                </form>
-                            </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedProdis.map(item => (
+                                            <button key={item} type="button" onClick={() => removeProdi(item)} className="flex items-center gap-2 bg-blue-50 text-[#1E88E5] border border-blue-100 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-red-50 hover:text-red-600 transition-all"><Minus className="w-3 h-3" /> {item}</button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3 pt-4 border-t border-slate-50">
+                                    <label className="text-[10px] font-bold text-orange-600 uppercase tracking-widest ml-1">Cari & Tambah Pembina (GB)</label>
+                                    <div className="relative">
+                                        <GraduationCap className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                        <input type="text" placeholder="Ketik nama GB lalu tekan enter..." value={inputSearchGB} onChange={(e) => setInputSearchGB(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addPembina(inputSearchGB))} className="w-full pl-12 pr-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-orange-500 text-sm font-bold" />
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedPembinas.map(item => (
+                                            <button key={item} type="button" onClick={() => removePembina(item)} className="flex items-center gap-2 bg-orange-50 text-orange-600 border border-orange-100 px-3 py-1.5 rounded-xl text-[10px] font-bold hover:bg-red-50 hover:text-red-600 transition-all"><Minus className="w-3 h-3" /> {item}</button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="pt-6">
+                                    <button type="submit" disabled={!isFormValid} className={`w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all shadow-lg ${isFormValid ? 'bg-gradient-to-r from-[#1E88E5] to-[#1565C0] text-white hover:shadow-blue-200' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}>
+                                        {isEditMode ? 'Simpan Perubahan' : 'Buat Kegiatan'} <CheckCircle className="w-5 h-5" />
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

@@ -64,12 +64,28 @@ export default function PengajuanPanel({ role, pengajuanList, setPengajuanList, 
                         <tbody>
                             {filtered.map((p: any) => (
                                 <tr key={p.id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                                    <td className="p-5 pl-8 font-bold text-slate-800 text-sm">{p.prodi}</td>
+                                    <td className="p-5 pl-8">
+                                        <p className="font-bold text-slate-800 text-sm">{p.prodi}</p>
 
-                                    {/* Menampilkan Nama GB dan Asal Universitas Sesuai Request */}
+                                        {/* TAMPILAN KOMENTAR/PESAN DARI KAPRODI (Jika Ada) */}
+                                        {p.pesan && (
+                                            <div className="mt-2 p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Pesan dari Prodi:</p>
+                                                <p className="text-xs text-slate-600 italic">"{p.pesan}"</p>
+                                            </div>
+                                        )}
+                                    </td>
+
                                     <td className="p-5">
                                         <p className="font-bold text-slate-800 text-sm">{p.gbName}</p>
                                         <p className="text-xs text-slate-500 mt-0.5">{p.gbUniv}</p>
+
+                                        {/* FLAG MINAT GURU BESAR (DITAMPILKAN KE ADMIN) */}
+                                        {role === 'admin' && p.berminat && (
+                                            <span className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-red-50 text-red-600 text-[10px] font-bold rounded-md border border-red-100">
+                                                <Heart className="w-3 h-3 fill-current" /> GB Berminat
+                                            </span>
+                                        )}
                                     </td>
 
                                     <td className="p-5 text-xs font-bold text-slate-400">{p.tgl}</td>
