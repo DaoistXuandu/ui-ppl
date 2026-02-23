@@ -89,10 +89,10 @@ export default function UnifiedDashboard() {
 
     // State Mock Data (Existing)
     const [pengajuanList, setPengajuanList] = useState([
-        { id: 1, prodi: 'Teknik Informatika - Univ. Telkom', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '22 Feb 2026', status: 'Sedang diproses', pesan: 'Terkait permohonan pendampingan akreditasi.' },
+        { id: 1, prodi: 'Teknik Informatika - Univ. Telkom', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '22 Feb 2026', status: 'Sedang diproses', pesan: 'Terkait permohonan pendampingan akreditasi.', berminat: true },
         { id: 2, prodi: 'Sistem Informasi - Univ. Indonesia', gbName: 'Prof. Dr. Siti Nurhaliza', gbUniv: 'Universitas Brawijaya', tgl: '20 Feb 2026', status: 'Diterima', pesan: "Terkait permohonan pendampingan akreditasi." },
         { id: 3, prodi: 'Teknik Komputer - ITS', gbName: 'Prof. Dr. Budi Santoso', gbUniv: 'Universitas Gadjah Mada', tgl: '18 Feb 2026', status: 'Sedang diproses', pesan: "" },
-        { id: 4, prodi: 'Informatika - Univ. Diponegoro', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '15 Feb 2026', status: 'Ditolak', pesan: "" },
+        { id: 4, prodi: 'Informatika - Univ. Diponegoro', gbName: 'Prof. Dr. Ahmad Setiawan', gbUniv: 'Institut Teknologi Bandung', tgl: '15 Feb 2026', status: 'Ditolak', pesan: "", berminat: true },
         { id: 5, prodi: 'Sains Data - Univ. Airlangga', gbName: 'Prof. Dr. Gede Putra', gbUniv: 'Universitas Udayana', tgl: '23 Feb 2026', status: 'Sedang diproses', pesan: "" },
         { id: 6, prodi: 'Teknologi Informasi - Univ. Bina Nusantara', gbName: 'Prof. Dr. Siti Nurhaliza', gbUniv: 'Universitas Brawijaya', tgl: '10 Feb 2026', status: 'Selesai', pesan: "" },
         { id: 7, prodi: 'Sistem Informasi - Univ. Gunadarma', gbName: 'Prof. Dr. Budi Santoso', gbUniv: 'Universitas Gadjah Mada', tgl: '21 Feb 2026', status: 'Diterima', pesan: "" },
